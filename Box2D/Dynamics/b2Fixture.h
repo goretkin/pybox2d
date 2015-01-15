@@ -22,6 +22,7 @@
 #include <Box2D/Dynamics/b2Body.h>
 #include <Box2D/Collision/b2Collision.h>
 #include <Box2D/Collision/Shapes/b2Shape.h>
+#include <vector>
 
 class b2BlockAllocator;
 class b2Body;
@@ -107,6 +108,11 @@ struct b2FixtureProxy
 class b2Fixture
 {
 public:
+
+	static bool findIntersectionOfFixtures(b2Fixture* fA, b2Fixture* fB, ::std::vector<b2Vec2>& outputVertices);
+	static b2Vec2 ComputeCentroid(::std::vector<b2Vec2> vs, float& area);
+	static b2Vec2 CenterOfFixtureIntersection(b2Fixture* fA, b2Fixture* fB);
+
 	/// Get the type of the child shape. You can use this to down cast to the concrete shape.
 	/// @return the shape type.
 	b2Shape::Type GetType() const;

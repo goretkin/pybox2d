@@ -221,5 +221,16 @@
         del locals()['to_remove']
     %}
 
+    
+
+
+    %include "std_vector.i"
+    // Instantiate templates so that you have something to pass into functions which have a vector<b2Vec2> reference
+    namespace std {
+
+       %template(Vec2Vector) vector<b2Vec2>;
+    }
+
+
 #endif
 
