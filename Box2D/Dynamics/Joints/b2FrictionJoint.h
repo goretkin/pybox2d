@@ -67,6 +67,18 @@ public:
 	/// The local anchor point relative to bodyB's origin.
 	const b2Vec2& GetLocalAnchorB() const  { return m_localAnchorB; }
 
+	void SetAnchor(const b2Vec2& anchor);
+
+	void SetColdStartLinearImpulse(const b2Vec2& linearImpulse);
+	void SetColdStartAngularImpulse(const float32 angularImpulse);
+
+
+
+	void SetAngularImpulse(float a);
+	void SetLinearImpulse(b2Vec2& l);
+	float GetAngularImpulse();
+	b2Vec2 GetLinearImpulse();
+
 	/// Set the maximum friction force in N.
 	void SetMaxForce(float32 force);
 
@@ -94,6 +106,9 @@ protected:
 
 	b2Vec2 m_localAnchorA;
 	b2Vec2 m_localAnchorB;
+
+	b2Vec2 m_coldStartLinearImpulse;
+	float32 m_coldStartAngularImpulse;
 
 	// Solver shared
 	b2Vec2 m_linearImpulse;

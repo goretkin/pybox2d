@@ -49,6 +49,9 @@ b2FrictionJoint::b2FrictionJoint(const b2FrictionJointDef* def)
 	m_linearImpulse.SetZero();
 	m_angularImpulse = 0.0f;
 
+	m_coldStartLinearImpulse.SetZero();
+	m_coldStartAngularImpulse= 0.0f;
+
 	m_maxForce = def->maxForce;
 	m_maxTorque = def->maxTorque;
 }
@@ -118,8 +121,21 @@ void b2FrictionJoint::InitVelocityConstraints(const b2SolverData& data)
 	}
 	else
 	{
-		m_linearImpulse.SetZero();
-		m_angularImpulse = 0.0f;
+		//m_linearImpulse.SetZero();
+		//m_angularImpulse = 0.0f;
+
+		m_linearImpulse = m_coldStartLinearImpulse;
+		m_angularImpulse = m_coldStartAngularImpulse;
+
+		//in a real cold start, everything here would be zeros.
+		m_linearImpulse *= data.step.dtRatio;
+		m_angularImpulse *= data.step.dtRatio;
+
+		b2Vec2 P(m_linearImpulse.x, m_linearImpulse.y);
+		vA -= mA * P;
+		wA -= iA * (b2Cross(m_rA, P) + m_angularImpulse);
+		vB += mB * P;
+		wB += iB * (b2Cross(m_rB, P) + m_angularImpulse);
 	}
 
 	data.velocities[m_indexA].v = vA;
@@ -202,6 +218,23 @@ b2Vec2 b2FrictionJoint::GetAnchorB() const
 	return m_bodyB->GetWorldPoint(m_localAnchorB);
 }
 
+
+void b2FrictionJoint::SetAnchor(const b2Vec2& anchor)
+{
+	m_localAnchorA = m_bodyA->GetLocalPoint(anchor);
+	m_localAnchorB = m_bodyB->GetLocalPoint(anchor);
+}
+
+void b2FrictionJoint::SetColdStartLinearImpulse(const b2Vec2& linearImpulse)
+{
+	m_coldStartLinearImpulse = linearImpulse;
+}
+
+void b2FrictionJoint::SetColdStartAngularImpulse(const float32 angularImpulse)
+{
+	m_coldStartAngularImpulse = angularImpulse;
+}
+
 b2Vec2 b2FrictionJoint::GetReactionForce(float32 inv_dt) const
 {
 	return inv_dt * m_linearImpulse;
@@ -232,6 +265,26 @@ void b2FrictionJoint::SetMaxTorque(float32 torque)
 float32 b2FrictionJoint::GetMaxTorque() const
 {
 	return m_maxTorque;
+}
+
+
+void b2FrictionJoint::SetAngularImpulse(float a)
+{
+	m_angularImpulse = a;
+}
+void b2FrictionJoint::SetLinearImpulse(b2Vec2& l)
+{
+	m_linearImpulse = l;
+}
+
+float b2FrictionJoint::GetAngularImpulse()
+{
+	return m_angularImpulse;
+}
+
+b2Vec2 b2FrictionJoint::GetLinearImpulse()
+{
+	return m_linearImpulse;
 }
 
 void b2FrictionJoint::Dump()
